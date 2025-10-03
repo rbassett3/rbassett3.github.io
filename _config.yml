@@ -16,7 +16,7 @@ timezone: America/Los_Angeles
 
 title: Robert Bassett # the main title
 
-tagline: Associate Professor of Operations Research and Applied Mathematics # it will display as the subtitle
+tagline: Associate Professor of OR and Applied Math # it will display as the subtitle
 
 description: >- # used by seo meta and the atom feed
   Robert Bassett's website and blog.
@@ -98,7 +98,7 @@ theme_mode: # [light | dark]
 cdn:
 
 # the avatar on sidebar, support local or CORS resources
-avatar: _images/headshot_small.jpg
+avatar: /assets/img/headshot_small.jpg
 
 # The URL of the site-wide social preview image used in SEO `og:image` meta tag.
 # It can be overridden by a customized `page.image` in front matter.
