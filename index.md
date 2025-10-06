@@ -21,8 +21,8 @@ I teach classes in Applied Mathematics, Statistics/Data Analysis, Mathematical P
 
 Email: robert.bassett "at" nps "dot" edu
 
-Office: Glasgow Hall 212
 
-    1411 Cunningham Rd
-
-    Monterey, CA 93943
+Office: <br>
+Glasgow Hall 212 <br>
+1411 Cunningham Rd <br>
+Monterey, CA 93943
