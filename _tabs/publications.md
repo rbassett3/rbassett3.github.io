@@ -1,7 +1,7 @@
 ---
 layout: default
 icon: fa-solid fa-book
-order: 1
+order: 2
 ---
 
 # Publications
