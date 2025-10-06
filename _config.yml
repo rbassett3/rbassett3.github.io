@@ -215,6 +215,7 @@ exclude:
   - purgecss.js
   - "*.config.js"
   - "package*.json"
+  - build_n_run_local.sh
 
 jekyll-archives:
   enabled: [categories, tags]
