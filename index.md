@@ -11,7 +11,7 @@ For details on my professional history, check out my CV or bio.
 
 ## Research
 
-See my CV or [my google scholar profile](https://scholar.google.com/citations?user=9ZHI8bgAAAAJ&hl=en).
+See my CV or [my Google Scholar profile](https://scholar.google.com/citations?user=9ZHI8bgAAAAJ&hl=en).
 
 ## Teaching
 
