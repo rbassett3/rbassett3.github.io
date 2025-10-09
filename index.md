@@ -1,9 +1,10 @@
 ---
 layout: default
+title: Home
 # Index page
 ---
 
-# About
+# Home
 
 I am an associate professor in the departments of Operations Research and Applied Mathematics at the Naval Postgraduate School. I am broadly interested in methods for making decisions with data. My research interests include various aspects of mathematical programming and statistics. I teach classes in Applied Mathematics, Statistics/Data Analysis, Mathematical Programming, and High Performance Computing.
 
