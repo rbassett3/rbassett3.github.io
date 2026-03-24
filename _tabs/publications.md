@@ -17,9 +17,12 @@ This page is a repository for the published versions of my work. If you are look
   <div class="pubauthors">{{ pub.authors }}</div>
   <div class="pubinfo">{{ pub.publication }}, {{ pub.year}}</div>
   <div class="publinks">
-  <a href="{{ pub.link}}"><i class="far fa-file-pdf"></i> PDF</a
+  <a href="{{ pub.link}}"><i class="far fa-file-pdf"></i> Paper</a
   >&nbsp;&nbsp; {% if pub.code %}
   <a href="{{pub.code}}"><i class="fas fa-link"></i> Code & Experiments</a
+  >&nbsp;&nbsp; {% endif %}
+  {% if pub.supplement %}
+  <a href="{{pub.supplement}}"><i class="fas fa-file-pdf"></i> Supplementary Material</a
   >&nbsp;&nbsp; {% endif %}
 </div>
   <br>
