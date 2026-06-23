@@ -1,0 +1,385 @@
+---
+layout: post
+title: On the Origins of Douglas-Rachford Splitting
+date: 2026-06-23
+---
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Robert Bassett" />
+  <title>On the Origins of Douglas-Rachford Splitting</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    div.abstract {
+      margin: 2em 2em 2em 2em;
+      text-align: left;
+      font-size: 85%;
+    }
+    div.abstract-title {
+      font-weight: bold;
+      text-align: center;
+      padding: 0;
+      margin-bottom: 0.5em;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <script
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js"
+  type="text/javascript"></script>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">On the Origins of Douglas-Rachford Splitting</h1>
+<p class="author">Robert Bassett</p>
+<div class="abstract">
+<div class="abstract-title">Abstract</div>
+<p>In this document I will introduce the original application of Douglas
+Rachford (DR) splitting and derive the connection between the original
+and conventional forms of DR splitting used today.</p>
+</div>
+</header>
+<h1 id="introduction">Introduction</h1>
+<p>The Douglas Rachford splitting algorithm for solving <span
+class="math display">\[\min_{x \in \mathcal{X}} f_{1}(x) +
+f_{2}(x)\]</span> consists of the following iteration.</p>
+<ol>
+<li><p><span class="math inline">\(k = 0\)</span>, <span
+class="math inline">\(x^{0} \in \mathcal{X}\)</span> some initial point,
+and <span class="math inline">\(\lambda &gt; 0\)</span>.</p></li>
+<li><p><span class="math inline">\(y_{1} = \mathrm{Prox}_{\lambda f_{1}}
+(x^{k})\)</span></p></li>
+<li><p><span class="math inline">\(y_2 = \mathrm{Prox}_{\lambda f_{2}}(2
+y_{1} - x^{k})\)</span></p></li>
+<li><p><span class="math inline">\(x^{k+1} = x^{k} + y_{2} -
+y_{1}\)</span></p></li>
+<li><p><span class="math inline">\(k = k+1\)</span>, repeat steps
+1-4.</p></li>
+</ol>
+<p>For the remainder of this document, we will use the language of
+resolvents instead of proximal operators. Recall the resolvent of a
+(potentially set-valued) maximal monotone operator <span
+class="math inline">\(A: \mathcal{X} \rightrightarrows
+\mathcal{X}\)</span> is the (provably single-valued) operator <span
+class="math inline">\(J_{A}: \mathcal{X} \to \mathcal{X}\)</span>
+defined by <span class="math inline">\(J_{A}(v) = (I + A)^{-1}
+v\)</span>. Recall that the proximal operator of a closed convex
+function is the resolvent of its subdifferential. Call the
+subdifferentials of <span class="math inline">\(f_{1}\)</span> and <span
+class="math inline">\(f_{2}\)</span> <span
+class="math inline">\(B\)</span> and <span
+class="math inline">\(A\)</span>, respectively (note the change of order
+here–this is for the sake of connecting our notation to that of the
+original sources).</p>
+<p>By eliminating <span class="math inline">\(y_{1}\)</span> and <span
+class="math inline">\(y_{2}\)</span> from the Douglas Rachford
+algorithm, the iteration becomes <span class="math display">\[x^{k+1} =
+x^{k} + J_{\lambda A} (2 J_{\lambda B} (x^{k}) - x^{k})
+- J_{\lambda B} x^{k}.\]</span> Simplifying, <span
+class="math display">\[\label{DR-conv}
+x^{k+1} =  J_{\lambda A} (2 J_{\lambda B} - I)x^{k}
++ (I- J_{\lambda B}) x^{k}.\]</span> The iteration <a href="#DR-conv"
+data-reference-type="eqref" data-reference="DR-conv">[DR-conv]</a> is
+the conventional/modern form of DR splitting.</p>
+<p>This modern form of DR splitting was first introduced in <span
+class="citation" data-cites="lions"></span>. Notably, this <em>not</em>
+the original paper by Douglas and Rachford. In my assessment, the DR
+splitting could more reasonably be called the Lions Mercier splitting
+because these authors discovered the method as a general purpose tool.
+In the original paper by Douglas and Rachford <span class="citation"
+data-cites="DR"></span>, the authors focus exclusively on finite
+difference methods for certain partial differential equations, solving
+the heat equation and Poisson equation in two and three dimensions. The
+proofs of these results are detailed analyses of the spectra of certain
+finite difference operators, so that the generalization in Lions &amp;
+Mercier <span class="citation" data-cites="lions"></span> is a
+significant achievement.</p>
+<p>The modern form of DR splitting <a href="#DR-conv"
+data-reference-type="eqref" data-reference="DR-conv">[DR-conv]</a> is
+due to Lions &amp; Mercier. Though Douglas and Rachford <span
+class="citation" data-cites="DR"></span> did not introduce it as such,
+Lions &amp; Mercier <span class="citation" data-cites="lions"></span>
+note that the splitting introduced by Douglas and Rachford <span
+class="citation" data-cites="DR"></span> had the form <span
+class="math display">\[\label{DR-og}
+u^{k+1} = (I + \lambda B)^{-1}\left[(I + \lambda A)^{-1} ( I - \lambda
+B) + \lambda B \right] u^{k}.\]</span> One advantage of the original
+form <a href="#DR-og" data-reference-type="eqref"
+data-reference="DR-og">[DR-og]</a> is that it provides a more intuitive
+connection to backward/implicit Euler discretization. Indeed, the update
+<a href="#DR-og" data-reference-type="eqref"
+data-reference="DR-og">[DR-og]</a> can be written as the pair of updates
+<span class="math display">\[\begin{aligned}
+u^{k+1/2} &amp;= \left[(I + \lambda A)^{-1}(I - \lambda B) + \lambda
+B\right] u^{k} \label{DR-part1}\\
+u^{k+1} &amp;= (I + \lambda B)^{-1} u^{k+1/2} \label{DR-part2}
+\end{aligned}\]</span></p>
+<p>Rewriting, <a href="#DR-part1" data-reference-type="eqref"
+data-reference="DR-part1">[DR-part1]</a>-<a href="#DR-part2"
+data-reference-type="eqref" data-reference="DR-part2">[DR-part2]</a> can
+be written <span class="math display">\[\begin{aligned}
+\frac{u^{k+1/2} - u^{k}}{\lambda} &amp;= - A u^{k+1/2} + \lambda A B
+u^{k} \label{DR-rewrite-part1}\\
+\frac{u^{k+1} - u^{k+1/2}}{\lambda} &amp;= - B
+u^{k+1},\label{DR-rewrite-part2}
+\end{aligned}\]</span> from which we can see that the original DR
+splitting <a href="#DR-og" data-reference-type="eqref"
+data-reference="DR-og">[DR-og]</a> is <em>almost</em> a repeated
+implicit Euler scheme in <span class="math inline">\(A\)</span> and
+<span class="math inline">\(B\)</span>, with the only discrepancy the
+<span class="math inline">\(\lambda A B u^{k}\)</span> term in <a
+href="#DR-rewrite-part1" data-reference-type="eqref"
+data-reference="DR-rewrite-part1">[DR-rewrite-part1]</a>. Finally, note
+that by eliminating <span class="math inline">\(u^{k+1/2}\)</span> via
+<a href="#DR-rewrite-part2" data-reference-type="eqref"
+data-reference="DR-rewrite-part2">[DR-rewrite-part2]</a>, <a
+href="#DR-rewrite-part1" data-reference-type="eqref"
+data-reference="DR-rewrite-part1">[DR-rewrite-part1]</a> becomes <span
+class="math display">\[\frac{u^{k+1} + \lambda B u^{k+1} -
+u^{k}}{\lambda} = - A(u^{k+1} + \lambda B u^{k+1}) + \lambda A B
+u^{k}.\]</span> Simplifying, this becomes <span
+class="math display">\[\frac{u^{k+1} - u^{k}}{\lambda} + \lambda A B
+u^{k+1} - \lambda A B u^{k} = - Bu^{k+1} - A u ^{k+1},
+\label{DR_og_simple}\]</span> which will be useful in the sequel.</p>
+<h1
+id="equivalence-between-modern-and-original-dr-iterations">Equivalence
+Between Modern and Original DR Iterations</h1>
+<p>We next show that the iterations <a href="#DR-og"
+data-reference-type="eqref" data-reference="DR-og">[DR-og]</a> and <a
+href="#DR-conv" data-reference-type="eqref"
+data-reference="DR-conv">[DR-conv]</a> are equivalent, as suggested in
+<span class="citation" data-cites="lions"></span>. Manipulating the
+iteration <a href="#DR-conv" data-reference-type="eqref"
+data-reference="DR-conv">[DR-conv]</a> using the definition of the
+resolvent, we have <span class="math display">\[\begin{aligned}
+x^{k+1} &amp;=  J_{\lambda A} (2 J_{\lambda B} - I)x^{k} + (I-
+J_{\lambda B}) x^{k}\\
+&amp;=(I + \lambda A)^{-1}(2 (I + \lambda B)^{-1} - I) x^{k} + (I - (I +
+\lambda B)^{-1}) x^{k}\\
+&amp;= 2 ( I + \lambda A)^{-1}(I + \lambda B)^{-1} x^{k} - (I + \lambda
+A)^{-1} x^{k} + x^{k} - (I + \lambda B)^{-1} x^{k}.
+\end{aligned}\]</span> Perform the substitution <span
+class="math inline">\(u^{k} = (I + \lambda B)^{-1} x^{k}\)</span>. Then
+we have <span class="math display">\[u^{k+1} = (I + \lambda B)^{-1}
+\left[ (I + \lambda A)^{-1} u^{k} - (I + \lambda A)^{-1} \lambda B u^{k}
++ \lambda B u^{k} \right],\]</span> which shows that the iteration <a
+href="#DR-og" data-reference-type="eqref"
+data-reference="DR-og">[DR-og]</a> is equivalent to <a href="#DR-conv"
+data-reference-type="eqref" data-reference="DR-conv">[DR-conv]</a> under
+the substitution <span class="math inline">\(u^{k} = (I + \lambda
+B)^{-1} x^{k}\)</span></p>
+<h1 id="how-dr-splitting-was-originally-applied">How DR Splitting Was
+Originally Applied</h1>
+<p>The original DR paper <span class="citation" data-cites="DR"></span>
+applied splitting to a few different PDEs. We’ll focus on the 2D Poisson
+equation. Let <span class="math inline">\(\nabla^{2}_{x}\)</span> and
+<span class="math inline">\(\nabla^{2}_{y}\)</span> be finite difference
+operators on a rectangular grid <span class="math inline">\(R\)</span>
+with boundary <span class="math inline">\(S\)</span>. Each operator
+<span class="math inline">\(\nabla^{2}_{x}\)</span> and <span
+class="math inline">\(\nabla^{2}_{y}\)</span> operates along rows or
+columns of the grid, so that solutions of equations involving one of
+these operators to be solved as a 1D problem. We want to solve the
+problem <span class="math display">\[\begin{aligned}
+\nabla^{2}_{x} w + \nabla^{2}_y w &amp;= f \quad \text{ on } R
+\label{pde}\\
+w &amp;= u \quad \text{ on } S,
+\end{aligned}\]</span> where <span class="math inline">\(w = u\)</span>
+gives the boundary condition. We will split the PDE <a href="#pde"
+data-reference-type="eqref" data-reference="pde">[pde]</a>. Let <span
+class="math inline">\(A(w) = -\nabla^2_{x} w+ f\)</span> and <span
+class="math inline">\(B(w) = -\nabla^{2}_{y} w\)</span>. Plugging these
+into the iteration <a href="#DR_og_simple" data-reference-type="eqref"
+data-reference="DR_og_simple">[DR_og_simple]</a>, we have <span
+class="math display">\[\frac{u^{k+1} - u^{k}}{\lambda} + \lambda
+\nabla^{2}_{x} \nabla^{2}_{y} (u^{k+1} - u^{k}) = \nabla^{2}_{y} u^{k+1}
++ \nabla^{2}_{x} u^{k+1} - f\]</span></p>
+<p>This is the exact update in equation (7.5) of the Douglas Rachford
+paper <span class="citation" data-cites="DR"></span>, show below.</p>
+<div class="center">
+<p><img src="fig_75.png" alt="image" /></p>
+</div>
+<p>Which can be written in a sequence of steps where the computational
+advantage of the splitting is more apparent, as in equation (7.4) from
+that paper.</p>
+<div class="center">
+<p><img src="fig_74.png" alt="image" /></p>
+</div>
+<h1 id="a-final-interesting-note">A Final Interesting Note</h1>
+<p>The original Douglas Rachford paper <span class="citation"
+data-cites="DR"></span> considered the heat equation, a PDE which is not
+steady-state (i.e. it has a <span class="math inline">\(\frac{\partial
+w}{\partial t}\)</span> term). The Lions Mercier paper <span
+class="citation" data-cites="lions"></span> also considers this case, in
+Section 2 as what it calls “evolution equations”. There is a surprising
+result: when the <span class="math inline">\(\lambda\)</span> parameter
+decreases linearly with <span class="math inline">\(n\)</span>, an
+extension of the Douglas Rachford algorithm converges to a solution of
+these problems. For <em>fixed</em> <span
+class="math inline">\(\lambda\)</span> the authors show that DR
+converges to the solution of a steady-state/stationary problem with no
+<span class="math inline">\(\frac{\partial w}{\partial t}\)</span> term.
+This is an interesting feature of DR splitting of which I was not
+aware.</p>
+</body>
+</html>
